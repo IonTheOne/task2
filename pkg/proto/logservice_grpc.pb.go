@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LogServiceClient interface {
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	StoreLog(ctx context.Context, in *StoreLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	StoreLogBatch(ctx context.Context, in *StoreLogBatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetLogs(ctx context.Context, in *GetLogsRequest, opts ...grpc.CallOption) (*GetLogsResponse, error)
@@ -31,6 +32,15 @@ type logServiceClient struct {
 
 func NewLogServiceClient(cc grpc.ClientConnInterface) LogServiceClient {
 	return &logServiceClient{cc}
+}
+
+func (c *logServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, "/logservice.LogService/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *logServiceClient) StoreLog(ctx context.Context, in *StoreLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
@@ -73,6 +83,7 @@ func (c *logServiceClient) GetLogCount(ctx context.Context, in *GetLogCountReque
 // All implementations must embed UnimplementedLogServiceServer
 // for forward compatibility
 type LogServiceServer interface {
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	StoreLog(context.Context, *StoreLogRequest) (*emptypb.Empty, error)
 	StoreLogBatch(context.Context, *StoreLogBatchRequest) (*emptypb.Empty, error)
 	GetLogs(context.Context, *GetLogsRequest) (*GetLogsResponse, error)
@@ -84,6 +95,9 @@ type LogServiceServer interface {
 type UnimplementedLogServiceServer struct {
 }
 
+func (UnimplementedLogServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
 func (UnimplementedLogServiceServer) StoreLog(context.Context, *StoreLogRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StoreLog not implemented")
 }
@@ -107,6 +121,24 @@ type UnsafeLogServiceServer interface {
 
 func RegisterLogServiceServer(s grpc.ServiceRegistrar, srv LogServiceServer) {
 	s.RegisterService(&LogService_ServiceDesc, srv)
+}
+
+func _LogService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LogServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/logservice.LogService/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LogServiceServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _LogService_StoreLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -188,6 +220,10 @@ var LogService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "logservice.LogService",
 	HandlerType: (*LogServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Login",
+			Handler:    _LogService_Login_Handler,
+		},
 		{
 			MethodName: "StoreLog",
 			Handler:    _LogService_StoreLog_Handler,
