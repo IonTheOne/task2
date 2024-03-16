@@ -6,12 +6,12 @@ import (
     "github.com/go-chi/chi/v5"
     httpSwagger "github.com/swaggo/http-swagger/v2"
 
-    "github.com/Mlstermass/task1/api/controller"
-    _ "github.com/Mlstermass/task1/swagger"
-    "github.com/Mlstermass/task1/pkg/env"
+    "github.com/Mlstermass/task2/api/controller"
+    // _ "github.com/Mlstermass/task2/swagger"
+    "github.com/Mlstermass/task2/pkg/env"
 )
 
-func New(ctl controller.App, conf env.Config) *chi.Mux {
+func New(ctl *controller.LogService, conf env.Config) *chi.Mux {
     r := chi.NewRouter()
 
     r.Get("/swagger/*", httpSwagger.Handler(

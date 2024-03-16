@@ -4,20 +4,25 @@ services:
   task:
     build:
       context: ..
-      dockerfile: task1/docker/Dockerfile
-    container_name: task1
+      dockerfile: task2/docker/Dockerfile
+    container_name: task2
     restart: always
     ports:
       - "8100:8100"
     env_file:
       - .env
-  mongo:
-    image: mongo:4.4.6-bionic
-    command: ["mongod", "--bind_ip_all"]
-    volumes:
-      - mongodb_data:/data/db
+    depends_on:
+      - immudb
+
+  immudb:
+    image: codenotary/immudb:latest
+    container_name: immudb
     ports:
-      - 27020:27017
+      - "3322:3322"
+    volumes:
+      - immudb_data:/var/lib/immudb
+    restart: always
 
 volumes:
-  mongodb_data:
+  immudb_data:
+  

@@ -10,10 +10,14 @@ import (
 )
 
 type Config struct {
-	AppHost                    string        `envconfig:"APP-HOST" required:"true"`
-	WriteTimeout               time.Duration `envconfig:"WRITE-TIMEOUT" default:"15s"`
-	ReadTimeout                time.Duration `envconfig:"READ-TIMEOUT" default:"15s"`
-	
+	AppHost        string        `envconfig:"APP-HOST" required:"true"`
+	WriteTimeout   time.Duration `envconfig:"WRITE-TIMEOUT" default:"15s"`
+	ReadTimeout    time.Duration `envconfig:"READ-TIMEOUT" default:"15s"`
+	ImmuDBAdress   string        `envconfig:"IMMUDB-ADRESS" required:"true"`
+	ImmuBDPort     int           `envconfig:"IMMUDB-PORT" required:"true"`
+	ImmuDBName     string        `envconfig:"IMMUDB-NAME" required:"true"`
+	ImmuDBUser     string        `envconfig:"IMMUDB-USER" required:"true"`
+	ImmuDBPassword string        `envconfig:"IMMUDB-PASSWORD" required:"true"`
 }
 
 func LoadConfig(cfg interface{}) {
