@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 package logservice;
 
@@ -8,14 +9,21 @@ option go_package = "github.com/Mlstermass/task2/pkg/proto";
 
 // The request message containing the log line
 message StoreLogRequest {
-  string log_line = 1;
-  string bucket = 2;
-  string token = 3;
+  string id = 1;
+  string log_line = 2;
+  string bucket = 3;
+  string token = 4;
+  google.protobuf.Timestamp timestamp = 5;
 }
 
 // The request message containing the batch of log lines
 message StoreLogBatchRequest {
-  repeated string log_lines = 1;
+  message LogLine {
+    string id = 1;
+    string log_line = 2;
+    google.protobuf.Timestamp timestamp = 3;
+  }
+  repeated LogLine log_lines = 1;
   string bucket = 2;
   string token = 3;
 }
@@ -29,7 +37,7 @@ message GetLogsRequest {
 
 // The response message containing the logs
 message GetLogsResponse {
-  repeated string logs = 1;
+  repeated StoreLogRequest logs = 1;
 }
 
 // The request message for retrieving the number of logs
@@ -43,8 +51,20 @@ message GetLogCountResponse {
   int32 count = 1;
 }
 
+// The login request message
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+// The login response message
+message LoginResponse {
+  string token = 1;
+}
+
 // The log service definition
 service LogService {
+  rpc Login(LoginRequest) returns (LoginResponse);
   rpc StoreLog(StoreLogRequest) returns (google.protobuf.Empty);
   rpc StoreLogBatch(StoreLogBatchRequest) returns (google.protobuf.Empty);
   rpc GetLogs(GetLogsRequest) returns (GetLogsResponse);

@@ -11,7 +11,7 @@ import (
     "github.com/Mlstermass/task2/pkg/env"
 )
 
-func New(ctl controller.LogService, conf env.Config) *chi.Mux {
+func New(ctl *controller.LogService, conf env.Config) *chi.Mux {
     r := chi.NewRouter()
 
     r.Get("/swagger/*", httpSwagger.Handler(
