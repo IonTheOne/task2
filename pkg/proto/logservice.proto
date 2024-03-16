@@ -64,9 +64,45 @@ message LoginResponse {
 
 // The log service definition
 service LogService {
+  // Login authenticates a user and returns a token.
+  //
+  // This method requires a username and a password. If the username and password are valid,
+  // this method will return a token that can be used to authenticate subsequent calls to other methods.
   rpc Login(LoginRequest) returns (LoginResponse);
-  rpc StoreLog(StoreLogRequest) returns (google.protobuf.Empty);
+
+  // StoreLog stores a log.
+  //
+  // This method requires a valid token, which can be obtained by calling the Login method.
+  //
+  // If the token is invalid, this method will return an Unauthenticated error.
+  //
+  // If there is an error storing the log, this method will return an error with a description of the problem.
+  rpc StoreLog (StoreLogRequest) returns (google.protobuf.Empty);
+
+  // StoreLogBatch stores a batch of logs.
+  //
+  // This method requires a valid token, which can be obtained by calling the Login method.
+  //
+  // If the token is invalid, this method will return an Unauthenticated error.
+  //
+  // If there is an error storing the logs, this method will return an error with a description of the problem.
   rpc StoreLogBatch(StoreLogBatchRequest) returns (google.protobuf.Empty);
+
+  // GetLogs retrieves logs.
+  //
+  // This method requires a valid token, which can be obtained by calling the Login method.
+  //
+  // If the token is invalid, this method will return an Unauthenticated error.
+  //
+  // If there is an error retrieving the logs, this method will return an error with a description of the problem.
   rpc GetLogs(GetLogsRequest) returns (GetLogsResponse);
+
+  // GetLogCount retrieves the count of logs.
+  //
+  // This method requires a valid token, which can be obtained by calling the Login method.
+  //
+  // If the token is invalid, this method will return an Unauthenticated error.
+  //
+  // If there is an error retrieving the log count, this method will return an error with a description of the problem.
   rpc GetLogCount(GetLogCountRequest) returns (GetLogCountResponse);
 }
