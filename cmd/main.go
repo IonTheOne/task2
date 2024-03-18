@@ -50,11 +50,6 @@ func main() {
         }
     }()
 
-    // Create a new HTTP server
-    ctx := context.Background()
-    ctx, cancel := context.WithCancel(ctx)
-    defer cancel()
-
     mux := runtime.NewServeMux()
 
     // Start the HTTP server
